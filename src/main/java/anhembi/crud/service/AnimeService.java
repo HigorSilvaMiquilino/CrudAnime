@@ -11,7 +11,7 @@ import java.util.Scanner;
 
 
 public class AnimeService {
-    private  final Scanner SCANNER = new Scanner(System.in);
+    public Scanner SCANNER = new Scanner(System.in);
 
     ConnectionFactory connectionFactory = new ConnectionFactory();
     AnimeRepository animeRepository = new AnimeRepository(connectionFactory);
@@ -25,7 +25,7 @@ public class AnimeService {
         }
     }
 
-    private  void findByName() {
+    public  void findByName() {
         System.out.println("Type the name or empty to all");
         String name = SCANNER.nextLine();
         List<Anime> animes = animeRepository.findByName(name);
@@ -37,7 +37,7 @@ public class AnimeService {
     //---------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-    private  void delete() {
+    public  void delete() {
         System.out.println("Type the id of the anime you want to delete");
         int id = Integer.parseInt(SCANNER.nextLine());
         System.out.println("Are you sure? S/N");
@@ -51,7 +51,7 @@ public class AnimeService {
     //---------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-    private  void save() {
+    public  void save() {
         System.out.println("Type the name of the anime");
         String name = SCANNER.nextLine();
         System.out.println("Type the number of episodes");
@@ -69,7 +69,7 @@ public class AnimeService {
 
     //---------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    private  void update() {
+    public void update() {
         System.out.println("Type the id of the object you want to update");
         int id = Integer.parseInt(SCANNER.nextLine());
         Optional<Anime> animeOptional = animeRepository.findById(id);

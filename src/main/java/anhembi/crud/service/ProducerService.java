@@ -11,12 +11,12 @@ import java.util.Scanner;
 
 
 public class ProducerService {
-    private  final Scanner SCANNER = new Scanner(System.in);
+    public Scanner SCANNER = new Scanner(System.in);
 
     ConnectionFactory connectionFactory = new ConnectionFactory();
     ProducerRepository producerRepository = new ProducerRepository(connectionFactory);
 
-    public  void menu(int op) {
+    public void menu(int op) {
         switch (op) {
             case 1 -> findByName();
             case 2 -> delete();
@@ -26,7 +26,7 @@ public class ProducerService {
         }
     }
 
-    private  void findByName() {
+    public void findByName() {
         System.out.println("Type the name or empty to all");
         String name = SCANNER.nextLine();
         List<Producer> producers = producerRepository.findByName(name);
@@ -38,7 +38,7 @@ public class ProducerService {
     //---------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-    private  void delete() {
+    public void delete() {
         System.out.println("Type the id of the producer you want to delete");
         System.out.println("Type one of the ids below to delete");
         int id = Integer.parseInt(SCANNER.nextLine());
@@ -53,7 +53,7 @@ public class ProducerService {
     //---------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-    private  void save() {
+    public void save() {
         System.out.println("Type the name of the producer");
         String name = SCANNER.nextLine();
         Producer producer = Producer.builder().name(name).build();
@@ -63,7 +63,7 @@ public class ProducerService {
 
     //---------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    private  void update() {
+    public void update() {
         System.out.println("Type the id of the object you want to update");
         int id = Integer.parseInt(SCANNER.nextLine());
         Optional<Producer> producerOptional = producerRepository.findById(id);
@@ -80,5 +80,4 @@ public class ProducerService {
 
         producerRepository.update(producerToUpdate);
     }
-
 }
