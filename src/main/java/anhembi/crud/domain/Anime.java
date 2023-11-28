@@ -6,7 +6,7 @@ import lombok.Value;
 
 @Builder
 @Value
-public class Anime {
+public class    Anime {
     Integer id;
     String name;
     int episodes;

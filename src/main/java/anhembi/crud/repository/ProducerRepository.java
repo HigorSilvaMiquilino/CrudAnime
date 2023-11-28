@@ -15,14 +15,19 @@ import java.util.Optional;
 
 @Log4j2
 public class ProducerRepository {
+    ConnectionFactory connection = new ConnectionFactory();
 
-    public static List<Producer> findByName(String name) {
+    public ProducerRepository(ConnectionFactory connectionFactory) {
+        this.connection = connectionFactory;
+    }
+
+    public  List<Producer> findByName(String name) {
         log.info("Finding producers by name '{}'", name);
         String sql = "select * FROM anime_store.producer where name like ?;";
         List<Producer> producers = new ArrayList<>();
-        try (Connection conn = ConnectionFactory.getConnection();
-             PreparedStatement ps = createdPreparedStatementFindByName(conn, sql, name);
-             ResultSet rs = ps.executeQuery()) {
+        try (PreparedStatement ps = connection.getConnection().prepareStatement(sql)) {
+            ps.setString(1, "%" + name + "%");
+            ResultSet rs = ps.executeQuery();
 
 
             while (rs.next()) {
@@ -39,17 +44,12 @@ public class ProducerRepository {
         return producers;
     }
 
-    private static PreparedStatement createdPreparedStatementFindByName(Connection connection, String sql, String name) throws SQLException {
-        PreparedStatement ps = connection.prepareStatement(sql);
-        ps.setString(1, "%" + name + "%");
-        return ps;
-    }
-
     //---------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    public static void delete(int id) {
-        try (Connection conn = ConnectionFactory.getConnection();
-             PreparedStatement ps = createdPreparedStatementDelete(conn, id)) {
+    public void delete(int id) {
+        String sql = "DELETE FROM `anime_store`.`producer` WHERE (`id` = ?);";
+        try (PreparedStatement ps = connection.getConnection().prepareStatement(sql)) {
+            ps.setInt(1, id);
             ps.execute();
             log.info("Deleted producer '{}' from the database,", id);
         } catch (SQLException e) {
@@ -57,41 +57,32 @@ public class ProducerRepository {
         }
     }
 
-    private static PreparedStatement createdPreparedStatementDelete(Connection connection, Integer id) throws SQLException {
-        String sql = "DELETE FROM `anime_store`.`producer` WHERE (`id` = ?);";
-        PreparedStatement ps = connection.prepareStatement(sql);
-        ps.setInt(1, id);
-        return ps;
-    }
+
 
     //---------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-    public static void save(Producer producer) {
+    public  void save(Producer producer) {
         log.info("Saving producer '{}'", producer);
-        try (Connection conn = ConnectionFactory.getConnection();
-             PreparedStatement ps = createPreparedStatementSave(conn, producer)) {
+        String sql = "INSERT INTO `anime_store`.`producer`  (`name`) VALUES (?);";
+        try (PreparedStatement ps = connection.getConnection().prepareStatement(sql)) {
+            ps.setString(1, producer.getName());
             ps.execute();
         } catch (SQLException e) {
             log.error("Error while trying to update producer '{}'", producer.getId(), e);
         }
     }
 
-    private static PreparedStatement createPreparedStatementSave(Connection connection, Producer producer) throws SQLException {
-        String sql = "INSERT INTO `anime_store`.`producer`  (`name`) VALUES (?);";
-        PreparedStatement ps = connection.prepareStatement(sql);
-        ps.setString(1, producer.getName());
-        return ps;
-    }
 
 
     //---------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    public static Optional<Producer> findById(Integer id) {
+    public  Optional<Producer> findById(Integer id) {
         log.info("Finding producers by id '{}'", id);
-        try (Connection conn = ConnectionFactory.getConnection();
-             PreparedStatement ps = createdPreparedStatementFindById(conn, id);
-             ResultSet rs = ps.executeQuery()) {
+        String sql = "select * FROM anime_store.producer where id = ?;";
+        try (PreparedStatement ps = connection.getConnection().prepareStatement(sql)) {
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
             if (!rs.next()) return Optional.empty();
             return Optional.of(Producer
                     .builder()
@@ -104,34 +95,21 @@ public class ProducerRepository {
         return Optional.empty();
     }
 
-    private static PreparedStatement createdPreparedStatementFindById(Connection connection, Integer id) throws SQLException {
-        String sql = "select * FROM anime_store.producer where id = ?;";
-        PreparedStatement ps = connection.prepareStatement(sql);
-        ps.setInt(1, id);
-        return ps;
-    }
 
     //---------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-    public static void update(Producer producer) {
+    public  void update(Producer producer) {
         log.info("Updating producer '{}'", producer);
-        try (Connection conn = ConnectionFactory.getConnection();
-             PreparedStatement ps = createPreparedStatementUpdate(conn, producer)) {
+        String sql = "UPDATE `anime_store`.`producer` SET `name` = ? WHERE (`id` = ?);";
+        try (PreparedStatement ps = connection.getConnection().prepareStatement(sql)) {
+            ps.setString(1, producer.getName());
+            ps.setInt(2, producer.getId());
             ps.execute();
         } catch (SQLException e) {
             log.error("Error while trying to update producer '{}'", producer.getId(), e);
         }
     }
-
-    private static PreparedStatement createPreparedStatementUpdate(Connection connection, Producer producer) throws SQLException {
-        String sql = "UPDATE `anime_store`.`producer` SET `name` = ? WHERE (`id` = ?);";
-        PreparedStatement ps = connection.prepareStatement(sql);
-        ps.setString(1, producer.getName());
-        ps.setInt(2, producer.getId());
-        return ps;
-    }
-
 
     //---------------------------------------------------------------------------------------------------------------------------------------------------------
 

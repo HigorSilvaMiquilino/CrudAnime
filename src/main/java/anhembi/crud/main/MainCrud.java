@@ -1,16 +1,17 @@
 package anhembi.crud.main;
 
-
-
 import anhembi.crud.service.AnimeService;
 import anhembi.crud.service.ProducerService;
 
 import java.util.Scanner;
 
 public class MainCrud {
-    private static final Scanner SCANNER = new Scanner(System.in);
+
 
     public static void main(String[] args) {
+        final Scanner SCANNER = new Scanner(System.in);
+        ProducerService producerService = new ProducerService();
+        AnimeService animeService = new AnimeService();
         int op;
 
         while (true) {
@@ -21,12 +22,12 @@ public class MainCrud {
                 case 1 -> {
                     producerMenu();
                     op = Integer.parseInt(SCANNER.nextLine());
-                    ProducerService.menu(op);
+                    producerService.menu(op);
                 }
                 case 2 -> {
                     animeMenu();
                     op = Integer.parseInt(SCANNER.nextLine());
-                    AnimeService.menu(op);
+                    animeService.menu(op);
                 }
             }
 

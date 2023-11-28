@@ -1,5 +1,6 @@
 package anhembi.crud.service;
 
+import anhembi.crud.conn.ConnectionFactory;
 import anhembi.crud.domain.Anime;
 import anhembi.crud.domain.Producer;
 import anhembi.crud.repository.AnimeRepository;
@@ -10,9 +11,12 @@ import java.util.Scanner;
 
 
 public class AnimeService {
-    private static final Scanner SCANNER = new Scanner(System.in);
+    private  final Scanner SCANNER = new Scanner(System.in);
 
-    public static void menu(int op) {
+    ConnectionFactory connectionFactory = new ConnectionFactory();
+    AnimeRepository animeRepository = new AnimeRepository(connectionFactory);
+
+    public  void menu(int op) {
         switch (op) {
             case 1 -> findByName();
             case 2 -> delete();
@@ -21,10 +25,10 @@ public class AnimeService {
         }
     }
 
-    private static void findByName() {
+    private  void findByName() {
         System.out.println("Type the name or empty to all");
         String name = SCANNER.nextLine();
-        List<Anime> animes = AnimeRepository.findByName(name);
+        List<Anime> animes = animeRepository.findByName(name);
         animes.forEach(p -> System.out.printf("[%d] - %s %d %s%n", p.getId(), p.getName(), p.getEpisodes(), p.getProducer().getName()));
 
     }
@@ -33,13 +37,13 @@ public class AnimeService {
     //---------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-    private static void delete() {
+    private  void delete() {
         System.out.println("Type the id of the anime you want to delete");
         int id = Integer.parseInt(SCANNER.nextLine());
         System.out.println("Are you sure? S/N");
         String choice = SCANNER.nextLine();
         if ("s".equalsIgnoreCase(choice)) {
-            AnimeRepository.delete(id);
+            animeRepository.delete(id);
         }
     }
 
@@ -47,7 +51,7 @@ public class AnimeService {
     //---------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-    private static void save() {
+    private  void save() {
         System.out.println("Type the name of the anime");
         String name = SCANNER.nextLine();
         System.out.println("Type the number of episodes");
@@ -59,16 +63,16 @@ public class AnimeService {
                 .name(name)
                 .producer(Producer.builder().id(producerId).build())
                 .build();
-        AnimeRepository.save(anime);
+        animeRepository.save(anime);
     }
 
 
     //---------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    private static void update() {
+    private  void update() {
         System.out.println("Type the id of the object you want to update");
         int id = Integer.parseInt(SCANNER.nextLine());
-        Optional<Anime> animeOptional = AnimeRepository.findById(id);
+        Optional<Anime> animeOptional = animeRepository.findById(id);
         if (animeOptional.isEmpty()) {
             System.out.println("Anime not found");
             return;
@@ -88,7 +92,7 @@ public class AnimeService {
                 .producer(animeFromDB.getProducer())
                 .name(name).build();
 
-        AnimeRepository.update(animeToUpdate);
+        animeRepository.update(animeToUpdate);
     }
 
 }
