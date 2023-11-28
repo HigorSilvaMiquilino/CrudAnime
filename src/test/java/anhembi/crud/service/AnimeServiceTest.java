@@ -5,6 +5,7 @@ import anhembi.crud.domain.Producer;
 import anhembi.crud.repository.AnimeRepository;
 
 
+import anhembi.crud.service.AnimeService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -179,6 +180,8 @@ class AnimeServiceTest {
         verify(animeService.SCANNER, times(1)).nextLine(); // Verifica se nextLine() foi chamado para ler o ID
         verify(animeService.SCANNER, times(1)).nextLine(); // Verifica se nextLine() foi chamado para exibir a mensagem de anime não encontrado
     }
+
+
     //---------------------------------------------------------------------------------------------------------------------------------------------------------
 
 }
