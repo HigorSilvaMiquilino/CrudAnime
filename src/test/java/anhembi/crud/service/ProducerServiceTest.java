@@ -50,7 +50,6 @@ class ProducerServiceTest {
 
     @Test
     void findByName_WhenNameExists_CorrectListReturned() {
-        // Arrange
         String inputName = "ExistingProducer";
         when(producerService.SCANNER.nextLine()).thenReturn(inputName);
 
@@ -60,31 +59,25 @@ class ProducerServiceTest {
         );
         when(producerRepository.findByName(inputName)).thenReturn(producers);
 
-        // Act
         producerService.findByName();
 
-        // Assert
         verify(producerRepository).findByName(inputName);
     }
 
     @Test
     void findByName_WhenNameDoesNotExist_EmptyListReturned() {
-        // Arrange
         String inputName = "NonExistingProducer";
         when(producerService.SCANNER.nextLine()).thenReturn(inputName);
 
         when(producerRepository.findByName(inputName)).thenReturn(Collections.emptyList());
 
-        // Act
         producerService.findByName();
 
-        // Assert
         verify(producerRepository).findByName(inputName);
     }
 
     @Test
     void findByName_WhenEmptyName_AllProducersReturned() {
-        // Arrange
         when(producerService.SCANNER.nextLine()).thenReturn("");
 
         List<Producer> producers = Arrays.asList(
@@ -93,10 +86,8 @@ class ProducerServiceTest {
         );
         when(producerRepository.findByName("")).thenReturn(producers);
 
-        // Act
         producerService.findByName();
 
-        // Assert
         verify(producerRepository).findByName("");
     }
 
@@ -104,44 +95,33 @@ class ProducerServiceTest {
 
     @Test
     void delete_DoesNotCallDelete_WhenUserDoesNotConfirm() {
-        // Arrange
         int producerId = 1;
         String input = producerId + "\nn\n";
         System.setIn(new ByteArrayInputStream(input.getBytes()));
 
-        // Simule o comportamento do scanner
         when(producerService.SCANNER.nextLine()).thenReturn(Integer.toString(producerId));
 
-        // Act
         producerService.delete();
 
-        // Assert
         verify(producerRepository, never()).delete(producerId);
 
-        // Reset System.in
         System.setIn(System.in);
     }
 
     @Test
     void delete_DoesNotCallDelete_WhenProducerNotFound() {
-        // Arrange
         int producerId = 1;
         String input = producerId + "\ns\n";
         System.setIn(new ByteArrayInputStream(input.getBytes()));
 
-        // Simule o comportamento do scanner
         when(producerService.SCANNER.nextLine()).thenReturn(Integer.toString(producerId));
 
-        // Simule o comportamento do método findById do producerRepository
         when(producerRepository.findById(producerId)).thenReturn(Optional.empty());
 
-        // Act
         producerService.delete();
 
-        // Assert
         verify(producerRepository, never()).delete(anyInt());
 
-        // Reset System.in
         System.setIn(System.in);
     }
 
@@ -150,38 +130,28 @@ class ProducerServiceTest {
 
     @Test
     void save_SavesProducerSuccessfully() {
-        // Arrange
         String producerName = "Test Producer";
         when(producerService.SCANNER.nextLine()).thenReturn(producerName);
 
-        // Act
         producerService.save();
 
-        // Assert
         verify(producerRepository, times(1)).save(any(Producer.class));
     }
 
     @Test
     void save_SavesProducerWithValidNameAndCorrectValues() {
-        // Arrange
         String producerName = "ValidProducer";
         when(producerService.SCANNER.nextLine()).thenReturn(producerName);
 
-        // Act
         producerService.save();
 
-        // Assert
-        // Verifica se o método save() foi chamado exatamente uma vez com um objeto Producer válido
         verify(producerRepository, times(1)).save(any(Producer.class));
 
-        // Captura o argumento passado para o método save()
         ArgumentCaptor<Producer> producerCaptor = ArgumentCaptor.forClass(Producer.class);
         verify(producerRepository).save(producerCaptor.capture());
 
-        // Obtém o produtor capturado
         Producer capturedProducer = producerCaptor.getValue();
 
-        // Verifica se o nome do produtor capturado é o mesmo fornecido como entrada
         assertEquals(producerName, capturedProducer.getName());
     }
 
@@ -190,10 +160,9 @@ class ProducerServiceTest {
 
     @Test
     void update_SuccessfulUpdate_CallsProducerRepositoryUpdate() {
-        // Arrange
         int existingProducerId = 1;
         when(producerService.SCANNER.nextLine())
-                .thenReturn(String.valueOf(existingProducerId)) // ID válido
+                .thenReturn(String.valueOf(existingProducerId))
                 .thenReturn("NewName");
 
         Producer existingProducer = Producer.builder()
@@ -203,27 +172,22 @@ class ProducerServiceTest {
 
         when(producerRepository.findById(existingProducerId)).thenReturn(Optional.of(existingProducer));
 
-        // Act
         producerService.update();
 
-        // Assert
-        verify(producerRepository, times(1)).update(any()); // Verifica se o método update foi chamado uma vez
+        verify(producerRepository, times(1)).update(any());
     }
 
     @Test
     void update_ProducerNotFound_PrintsErrorMessage() {
-        // Arrange
         int nonExistingProducerId = 100;
-        when(producerService.SCANNER.nextLine()).thenReturn(String.valueOf(nonExistingProducerId)); // ID inválido
+        when(producerService.SCANNER.nextLine()).thenReturn(String.valueOf(nonExistingProducerId));
         when(producerRepository.findById(nonExistingProducerId)).thenReturn(Optional.empty());
 
-        // Act
         producerService.update();
 
-        // Assert
         verify(producerRepository, never()).update(any());
-        verify(producerService.SCANNER, times(1)).nextLine(); // Verifica se nextLine() foi chamado para ler o ID
-        verify(producerService.SCANNER, times(1)).nextLine(); // Verifica se nextLine() foi chamado para exibir a mensagem de produtor não encontrado
+        verify(producerService.SCANNER, times(1)).nextLine();
+        verify(producerService.SCANNER, times(1)).nextLine();
     }
 
 

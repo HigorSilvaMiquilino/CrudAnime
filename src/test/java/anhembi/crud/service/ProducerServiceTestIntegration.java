@@ -44,13 +44,11 @@ class ProducerServiceTestIntegration {
 
     @Test
     void integrationTest_UpdateProducer_SuccessfulUpdate() {
-        // Arrange
         int existingProducerId = 1;
         when(producerService.SCANNER.nextLine())
-                .thenReturn(String.valueOf(existingProducerId)) // ID válido
-                .thenReturn("NewName"); // Novo nome
+                .thenReturn(String.valueOf(existingProducerId))
+                .thenReturn("NewName");
 
-        // Mock ProducerRepository
         ProducerRepository producerRepositoryMock = mock(ProducerRepository.class);
         producerService.producerRepository = producerRepositoryMock;
 
@@ -61,37 +59,30 @@ class ProducerServiceTestIntegration {
 
         when(producerRepositoryMock.findById(existingProducerId)).thenReturn(Optional.of(existingProducer));
 
-        // Act
         producerService.update();
 
-        // Assert
-        verify(producerRepositoryMock, times(1)).update(any()); // Verifica se o método update foi chamado uma vez
+        verify(producerRepositoryMock, times(1)).update(any());
     }
 
     @Test
     void integrationTest_UpdateProducer_NotFound_PrintsErrorMessage() {
-        // Arrange
-        int nonExistingProducerId = 100;
-        when(producerService.SCANNER.nextLine()).thenReturn(String.valueOf(nonExistingProducerId)); // ID inválido
 
-        // Mock ProducerRepository
+        int nonExistingProducerId = 100;
+        when(producerService.SCANNER.nextLine()).thenReturn(String.valueOf(nonExistingProducerId));
+
         ProducerRepository producerRepositoryMock = mock(ProducerRepository.class);
         producerService.producerRepository = producerRepositoryMock;
 
         when(producerRepositoryMock.findById(nonExistingProducerId)).thenReturn(Optional.empty());
 
-        // Mock System.out for capturing printed messages
         ByteArrayOutputStream outContent = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outContent));
 
-        // Act
         producerService.update();
 
-        // Assert
         verify(producerRepositoryMock, never()).update(any());
-        assertTrue(outContent.toString().contains("Producer not found")); // Verifica se a mensagem de erro foi impressa
+        assertTrue(outContent.toString().contains("Producer not found"));
 
-        // Reset System.out
         System.setOut(System.out);
     }
 
@@ -99,58 +90,43 @@ class ProducerServiceTestIntegration {
 
     @Test
     void integrationTest_FindProducerById_PrintsProducerInfo() {
-        // Arrange
         int existingProducerId = 1;
-        when(producerService.SCANNER.nextLine()).thenReturn(String.valueOf(existingProducerId)); // ID válido
+        when(producerService.SCANNER.nextLine()).thenReturn(String.valueOf(existingProducerId));
 
-        // Mock ProducerRepository
         ProducerRepository producerRepositoryMock = mock(ProducerRepository.class);
         producerService.producerRepository = producerRepositoryMock;
 
-        // Dados de teste
         Producer expectedProducer = Producer.builder().id(existingProducerId).name("Studio1").build();
 
-        // Configuração do comportamento simulado do repositório
         when(producerRepositoryMock.findById(existingProducerId)).thenReturn(Optional.of(expectedProducer));
 
-        // Mock System.out for capturing printed messages
         ByteArrayOutputStream outContent = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outContent));
 
-        // Act
         producerService.findByName();
 
-        // Assert
         assertFalse(outContent.toString().contains("[1] - Studio1"));
 
-        // Reset System.out
         System.setOut(System.out);
     }
 
     @Test
     void integrationTest_FindProducerById_NotFound_PrintsErrorMessage() {
-        // Arrange
         int nonExistingProducerId = 100;
-        when(producerService.SCANNER.nextLine()).thenReturn(String.valueOf(nonExistingProducerId)); // ID inválido
+        when(producerService.SCANNER.nextLine()).thenReturn(String.valueOf(nonExistingProducerId));
 
-        // Mock ProducerRepository
         ProducerRepository producerRepositoryMock = mock(ProducerRepository.class);
         producerService.producerRepository = producerRepositoryMock;
 
-        // Configuração do comportamento simulado do repositório
         when(producerRepositoryMock.findById(nonExistingProducerId)).thenReturn(Optional.empty());
 
-        // Mock System.out for capturing printed messages
         ByteArrayOutputStream outContent = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outContent));
 
-        // Act
         producerService.findByName();
 
-        // Assert
         assertFalse(outContent.toString().contains("Producer not found"));
 
-        // Reset System.out
         System.setOut(System.out);
     }
 
@@ -158,46 +134,36 @@ class ProducerServiceTestIntegration {
 
     @Test
     void integrationTest_DeleteProducer_NotFound_NoErrorMessage() {
-        // Arrange
         int nonExistingProducerId = 100;
-        when(producerService.SCANNER.nextLine()).thenReturn(String.valueOf(nonExistingProducerId)); // ID inválido
+        when(producerService.SCANNER.nextLine()).thenReturn(String.valueOf(nonExistingProducerId));
 
-        // Mock ProducerRepository
         ProducerRepository producerRepositoryMock = mock(ProducerRepository.class);
         producerService.producerRepository = producerRepositoryMock;
 
         when(producerRepositoryMock.findById(nonExistingProducerId)).thenReturn(Optional.empty());
 
-        // Mock System.out for capturing printed messages
         ByteArrayOutputStream outContent = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outContent));
 
-        // Act
         producerService.delete();
 
-        // Assert
-        assertFalse(outContent.toString().contains("Producer not found"), "Unexpected error message found"); // Verifica se a mensagem de erro não foi impressa
+        assertFalse(outContent.toString().contains("Producer not found"), "Unexpected error message found");
 
-        // Reset System.out
         System.setOut(System.out);
     }
 
 
     @Test
     void integrationTest_DeleteProducer_ConfirmDeletion() {
-        // Arrange
         int existingProducerId = 1;
-        when(producerService.SCANNER.nextLine()).thenReturn(String.valueOf(existingProducerId), "S"); // ID válido e confirmação de exclusão
+        when(producerService.SCANNER.nextLine()).thenReturn(String.valueOf(existingProducerId), "S");
 
-        // Mock ProducerRepository
         ProducerRepository producerRepositoryMock = mock(ProducerRepository.class);
         producerService.producerRepository = producerRepositoryMock;
 
-        // Act
         producerService.delete();
 
-        // Assert
-        verify(producerRepositoryMock, times(1)).delete(existingProducerId); // Verifica se o método delete foi chamado uma vez
+        verify(producerRepositoryMock, times(1)).delete(existingProducerId);
     }
 
 
@@ -205,50 +171,36 @@ class ProducerServiceTestIntegration {
 
     @Test
     void integrationTest_SaveProducer_SuccessfulSave() {
-        // Arrange
         String producerName = "NewProducer";
-        when(producerService.SCANNER.nextLine()).thenReturn(producerName); // Nome do produtor válido
+        when(producerService.SCANNER.nextLine()).thenReturn(producerName);
 
-        // Mock ProducerRepository
         ProducerRepository producerRepositoryMock = mock(ProducerRepository.class);
         producerService.producerRepository = producerRepositoryMock;
 
-        // Act
         producerService.save();
 
-        // Assert
-        verify(producerRepositoryMock, times(1)).save(any(Producer.class)); // Verifica se o método save foi chamado uma vez com qualquer instância de Producer
+        verify(producerRepositoryMock, times(1)).save(any(Producer.class));
     }
 
     @Test
     void integrationTest_SaveProducer_DuplicateName_NoErrorMessage() {
-        // Arrange
         String existingProducerName = "ExistingProducer";
-        when(producerService.SCANNER.nextLine()).thenReturn(existingProducerName); // Nome de produtor já existente
+        when(producerService.SCANNER.nextLine()).thenReturn(existingProducerName);
 
-        // Mock ProducerRepository
         ProducerRepository producerRepositoryMock = mock(ProducerRepository.class);
         producerService.producerRepository = producerRepositoryMock;
 
-        // Configuração do comportamento simulado do repositório
         when(producerRepositoryMock.findByName(existingProducerName)).thenReturn(List.of(Producer.builder().name(existingProducerName).build()));
 
-        // Mock System.out for capturing printed messages
         ByteArrayOutputStream outContent = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outContent));
 
-        // Act
         producerService.save();
 
-        // Assert
-        assertFalse(outContent.toString().contains("Producer with the same name already exists")); // Verifica se a mensagem de erro não foi impressa
+        assertFalse(outContent.toString().contains("Producer with the same name already exists"));
 
-        // Reset System.out
         System.setOut(System.out);
     }
-
-
-
 
     //------------------------------------------------------------------------------------------------------------------
 
